@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashbills - Painel Financeiro</title>
+    <meta name="description" content="Dashboard de controle de despesas e finanças pessoais integrado com planilhas Excel e modelo YAML.">
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            
+            /* Status Colors */
+            --color-success: #10b981;
+            --color-success-glow: rgba(16, 185, 129, 0.15);
+            --color-danger: #ef4444;
+            --color-danger-glow: rgba(239, 68, 68, 0.15);
+            --color-warning: #f59e0b;
+            --color-info: #3b82f6;
+            
+            /* Brand Gradients */
+            --grad-santander: linear-gradient(135deg, #ec1c24, #b01017);
+            --grad-c6: linear-gradient(135deg, #2b2b2b, #111111);
+            --grad-itau: linear-gradient(135deg, #ff8c00, #ec5e00);
+            --grad-nubank: linear-gradient(135deg, #8a05be, #53007a);
+            --grad-picpay: linear-gradient(135deg, #11c76f, #0d8a4d);
+            --grad-mercadopago: linear-gradient(135deg, #009ee3, #007bb0);
+            --grad-default: linear-gradient(135deg, #4b5563, #374151);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+            padding-bottom: 3rem;
+        }
+
+        h1, h2, h3, .brand-title {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 1.5rem;
+        }
+
+        .brand-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .brand-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #ffffff, #9ca3af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Period Switcher */
+        .period-selector-form {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .period-selector-form label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper select {
+            appearance: none;
+            background-color: rgba(31, 41, 55, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
+            padding: 0.6rem 2.5rem 0.6rem 1.2rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .select-wrapper select:hover {
+            border-color: #3b82f6;
+            background-color: rgba(31, 41, 55, 1);
+        }
+
+        .select-wrapper select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
+
+        .select-wrapper::after {
+            content: "▼";
+            font-size: 0.7rem;
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        /* KPI Cards Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .kpi-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .kpi-title {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            margin-bottom: 0.25rem;
+        }
+
+        .kpi-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .kpi-icon-wrapper {
+            opacity: 0.2;
+            position: absolute;
+            right: 1.25rem;
+            bottom: 1.25rem;
+        }
+
+        /* KPI Specific Tweaks */
+        .kpi-remaining {
+            border-left: 4px solid var(--color-success);
+        }
+        .kpi-remaining.negative {
+            border-left: 4px solid var(--color-danger);
+        }
+        .kpi-remaining.negative .kpi-value {
+            color: #f87171;
+        }
+        .kpi-remaining.positive .kpi-value {
+            color: #34d399;
+        }
+        
+        .kpi-daily {
+            border-left: 4px solid var(--color-warning);
+            background: radial-gradient(circle at 100% 0%, rgba(245, 158, 11, 0.05) 0%, transparent 70%);
+        }
+        
+        .kpi-daily .countdown {
+            color: var(--color-warning);
+            font-weight: 600;
+        }
+
+        /* Credit Cards section */
+        .section-title {
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Literal Credit Card UI */
+        .credit-card {
+            border-radius: 20px;
+            padding: 1.75rem;
+            color: white;
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .credit-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom right, rgba(255,255,255,0.15), transparent);
+            pointer-events: none;
+        }
+
+        .credit-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .credit-card.active {
+            box-shadow: 0 0 0 3px #3b82f6, 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Card Branding Gradients */
+        .credit-card.card-santander { background: var(--grad-santander); }
+        .credit-card.card-c6 { background: var(--grad-c6); border-color: rgba(255,255,255,0.05); }
+        .credit-card.card-itau { background: var(--grad-itau); }
+        .credit-card.card-nubank { background: var(--grad-nubank); }
+        .credit-card.card-picpay { background: var(--grad-picpay); }
+        .credit-card.card-mercadopago { background: var(--grad-mercadopago); }
+        .credit-card.card-default { background: var(--grad-default); }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .card-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .card-chip {
+            width: 38px;
+            height: 28px;
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            opacity: 0.8;
+        }
+
+        .card-chip::after {
+            content: '';
+            position: absolute;
+            border: 1px solid rgba(0,0,0,0.15);
+            top: 2px; left: 6px; right: 6px; bottom: 2px;
+            border-top: none; border-bottom: none;
+        }
+
+        .card-body {
+            margin-top: 1.5rem;
+        }
+
+        .card-label {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+
+        .card-total {
+            font-size: 1.75rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .card-tx-count {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 3px 10px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .card-holder {
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            opacity: 0.75;
+        }
+
+        /* Detail Transactions container */
+        .details-wrapper {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .active-account-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .active-account-badge {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            background-color: rgba(31, 41, 55, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem 0.5rem 2.2rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            width: 240px;
+            transition: all 0.2s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background-color: rgba(31, 41, 55, 0.8);
+            width: 280px;
+        }
+
+        .search-box::before {
+            content: "🔍";
+            font-size: 0.8rem;
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.5;
+        }
+
+        /* Transaction List */
+        .tx-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: 480px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .tx-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .tx-list::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.02);
+            border-radius: 10px;
+        }
+        .tx-list::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+        .tx-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .tx-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .tx-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            transform: scale(1.005);
+        }
+
+        .tx-info {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+        }
+
+        .tx-icon {
+            background-color: rgba(255, 255, 255, 0.05);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .tx-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tx-desc {
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .tx-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .tx-value {
+            font-weight: 600;
+            font-size: 1.05rem;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .tx-item.spent .tx-value {
+            color: #fca5a5;
+        }
+        
+        .tx-item.zero .tx-value {
+            color: var(--text-muted);
+        }
+
+        .no-transactions {
+            text-align: center;
+            padding: 3rem 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* SVG icons definitions */
+        .icon {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        /* Responsive Tweaks */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .period-selector-form {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            .details-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .search-box, .search-box input {
+                width: 100%;
+            }
+            .search-box input:focus {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <!-- Header -->
+        <header>
+            <div class="brand-info">
+                <div class="logo-icon">$</div>
+                <div>
+                    <h1 class="brand-title">Cashbills</h1>
+                    <p class="brand-subtitle">Gestão & Finanças Pessoais</p>
+                </div>
+            </div>
+            
+            <!-- Period Selector -->
+            <form action="" method="get" class="period-selector-form">
+                <label for="periodo">Período de referência:</label>
+                <div class="select-wrapper">
+                    <select name="periodo" id="periodo" onchange="this.form.submit()">
+                        {% for period in period_names %}
+                            <option value="{{ period }}" {% if period == selected_period %}selected{% endif %}>{{ period }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </header>
+
+        <!-- KPI Cards Grid -->
+        <div class="kpi-grid">
+            
+            <!-- Income Card -->
+            <div class="kpi-card">
+                <div class="kpi-title">
+                    <span>Renda Mensal</span>
+                    <svg class="icon" style="color: var(--color-success);"><path d="M12 5v14M5 12h14"/></svg>
+                </div>
+                <div class="kpi-value" style="color: #6ee7b7;">{{ stats.salario }}</div>
+                <div class="kpi-desc">Guardado adicional: <span style="font-weight: 500;">{{ stats.guardado }}</span></div>
+            </div>
+
+            <!-- Spent Card -->
+            <div class="kpi-card">
+                <div class="kpi-title">
+                    <span>Total Despesas (Cartões)</span>
+                    <svg class="icon" style="color: var(--color-danger);"><path d="M19 12H5M12 19V5"/></svg>
+                </div>
+                <div class="kpi-value" style="color: #fca5a5;">{{ stats.total_spent }}</div>
+                <div class="kpi-desc">Soma de todos os cartões</div>
+            </div>
+
+            <!-- Remaining Card -->
+            <div class="kpi-card kpi-remaining {% if stats.is_negative %}negative{% else %}positive{% endif %}">
+                <div class="kpi-title">
+                    <span>Saldo Restante</span>
+                    {% if stats.is_negative %}
+                    <svg class="icon" style="color: var(--color-danger);"><path d="m19 12-7 7-7-7M12 5v14"/></svg>
+                    {% else %}
+                    <svg class="icon" style="color: var(--color-success);"><path d="m5 12 7-7 7 7M12 19V5"/></svg>
+                    {% endif %}
+                </div>
+                <div class="kpi-value">{{ stats.restante }}</div>
+                <div class="kpi-desc">Fórmula: (Salário + Guardado) - Despesas</div>
+            </div>
+
+            <!-- Daily Card -->
+            <div class="kpi-card kpi-daily">
+                <div class="kpi-title">
+                    <span>Média Diária Disponível</span>
+                    <svg class="icon" style="color: var(--color-warning);"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <div class="kpi-value" style="color: #fcd34d;">{{ stats.media_diaria }}</div>
+                <div class="kpi-desc">Restam <span class="countdown">{{ stats.dias_restantes }} dias</span> até o dia 5 do próximo mês</div>
+            </div>
+            
+        </div>
+
+        <!-- Section Accounts -->
+        <h2 class="section-title">
+            <svg class="icon" style="margin-right: 0.25rem;"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            Contas & Cartões
+        </h2>
+        
+        <!-- Cards Grid -->
+        <div class="cards-grid">
+            {% for bank_name, info in contas.items() %}
+                {% set card_class = "card-default" %}
+                {% set bank_clean = bank_name|lower|trim %}
+                {% if "santander" in bank_clean %}
+                    {% set card_class = "card-santander" %}
+                {% elif "c6" in bank_clean %}
+                    {% set card_class = "card-c6" %}
+                {% elif "itau" in bank_clean or "itaú" in bank_clean %}
+                    {% set card_class = "card-itau" %}
+                {% elif "nubank" in bank_clean %}
+                    {% set card_class = "card-nubank" %}
+                {% elif "picpay" in bank_clean %}
+                    {% set card_class = "card-picpay" %}
+                {% elif "mercado pago" in bank_clean or "mercado" in bank_clean %}
+                    {% set card_class = "card-mercadopago" %}
+                {% endif %}
+                
+                <div class="credit-card {{ card_class }}" id="btn-{{ loop.index0 }}" onclick="selectAccount('{{ bank_name }}', '{{ card_class }}', {{ loop.index0 }})">
+                    <div class="card-header">
+                        <span class="card-name">{{ bank_name }}</span>
+                        <div class="card-chip"></div>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-label">Total Gasto</div>
+                        <div class="card-total">{{ info.total_formatado }}</div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="card-holder">FINAL {{ selected_period }}</span>
+                        <span class="card-tx-count">{{ info.count }} lanc.</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Section Details -->
+        <div class="details-wrapper" id="details-section">
+            <div class="details-header">
+                <div class="active-account-title">
+                    <span class="active-account-badge" id="active-badge" style="background-color: var(--text-primary);"></span>
+                    <h3 style="font-size: 1.25rem;" id="active-account-name">Selecione uma conta</h3>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="tx-search" placeholder="Buscar lançamento..." onkeyup="filterTransactions()">
+                </div>
+            </div>
+
+            <!-- Transactions list -->
+            {% for bank_name, info in contas.items() %}
+                <div class="tx-list-container" id="tx-list-{{ bank_name }}" style="display: none;">
+                    {% if info.transacoes %}
+                        <div class="tx-list">
+                            {% for tx in info.transacoes %}
+                                {% set tx_type_class = "spent" %}
+                                {% if tx.valor == 0.0 %}
+                                    {% set tx_type_class = "zero" %}
+                                {% endif %}
+                                <div class="tx-item {{ tx_type_class }}" data-desc="{{ tx.descricao|lower }}">
+                                    <div class="tx-info">
+                                        <div class="tx-icon">💸</div>
+                                        <div class="tx-details">
+                                            <span class="tx-desc">{{ tx.descricao }}</span>
+                                            <span class="tx-date">Lançamento</span>
+                                        </div>
+                                    </div>
+                                    <span class="tx-value">{% if tx.valor > 0.0 %}- {% endif %}{{ tx.valor_formatado }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="no-transactions">
+                            Nenhum lançamento registrado neste período para esta conta.
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+    <!-- Javascript for UI interactivity -->
+    <script>
+        // Track the active account index
+        let activeIndex = 0;
+        
+        // Define color mappings for the badges in the detail section
+        const colors = {
+            'card-santander': '#ec1c24',
+            'card-c6': '#374151',
+            'card-itau': '#ff8c00',
+            'card-nubank': '#8a05be',
+            'card-picpay': '#11c76f',
+            'card-mercadopago': '#009ee3',
+            'card-default': '#6b7280'
+        };
+
+        function selectAccount(name, cardClass, idx) {
+            // Remove active class from all cards
+            const cards = document.querySelectorAll('.credit-card');
+            cards.forEach(card => card.classList.remove('active'));
+            
+            // Add active class to selected card
+            const selectedCard = document.getElementById('btn-' + idx);
+            if (selectedCard) {
+                selectedCard.classList.add('active');
+            }
+            
+            // Hide all transaction lists
+            const lists = document.querySelectorAll('.tx-list-container');
+            lists.forEach(list => list.style.display = 'none');
+            
+            // Show selected transaction list
+            const activeList = document.getElementById('tx-list-' + name);
+            if (activeList) {
+                activeList.style.display = 'block';
+            }
+            
+            // Update details header
+            document.getElementById('active-account-name').textContent = name + ' - Lançamentos';
+            const badge = document.getElementById('active-badge');
+            badge.style.backgroundColor = colors[cardClass] || '#ffffff';
+            
+            // Clear search box
+            const searchInput = document.getElementById('tx-search');
+            searchInput.value = '';
+            filterTransactions(); // Reset filter
+            
+            activeIndex = idx;
+        }
+
+        function filterTransactions() {
+            const query = document.getElementById('tx-search').value.toLowerCase();
+            const activeContainers = document.querySelectorAll('.tx-list-container');
+            
+            // Find which container is currently visible
+            let visibleContainer = null;
+            activeContainers.forEach(container => {
+                if (container.style.display === 'block') {
+                    visibleContainer = container;
+                }
+            });
+            
+            if (!visibleContainer) return;
+            
+            const items = visibleContainer.querySelectorAll('.tx-item');
+            items.forEach(item => {
+                const desc = item.getAttribute('data-desc') || '';
+                if (desc.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Initialize view by selecting the first card
+        window.addEventListener('DOMContentLoaded', () => {
+            const firstCard = document.querySelector('.credit-card');
+            if (firstCard) {
+                // Trigger click on the first card
+                firstCard.click();
+            }
+        });
+    </script>
+</body>
+</html>

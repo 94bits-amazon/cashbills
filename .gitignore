@@ -1,0 +1,18 @@
+# Excel data directory containing real finance spreadsheets
+Data/
+[Dd]ata/
+
+# Python cache and environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+
+# IDE and OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

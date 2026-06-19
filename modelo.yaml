@@ -1,0 +1,223 @@
+periodos:
+  - nome: "JUN-JUL"
+    receitas:
+      salario: 4090.00
+      guardado: 45.58
+    contas:
+      "Santander":
+        transacoes:
+          - descricao: "Gasolina"
+            valor: 66.90
+          - descricao: "Gasolina 2/5"
+            valor: 64.50
+          - descricao: "Bonanza"
+            valor: 14.90
+      "C6":
+        transacoes:
+          - descricao: "Meu TIM"
+            valor: 58.99
+          - descricao: "Avó TIM"
+            valor: 70.99
+      "Itau":
+        transacoes:
+          - descricao: "parcela 4 de 10 guarda roupa"
+            valor: 99.80
+      "Nubank":
+        transacoes:
+          - descricao: "MS365"
+            valor: 36.00
+          - descricao: "Grancursos"
+            valor: 46.04
+          - descricao: "nu+"
+            valor: 29.00
+          - descricao: "youtube"
+            valor: 53.90
+          - descricao: "Google"
+            valor: 96.99
+          - descricao: "Bluefit"
+            valor: 145.00
+          - descricao: "Udemy"
+            valor: 51.00
+          - descricao: "Pix Priscilla"
+            valor: 163.88
+      "Picpay":
+        transacoes:
+          - descricao: "prajed 2 de 3"
+            valor: 130.46
+          - descricao: "IPVA 4 e 5"
+            valor: 0.00
+          - descricao: "anhanguera"
+            valor: 492.26
+          - descricao: "Filtro"
+            valor: 10.00
+          - descricao: "Mercado"
+            valor: 14.88
+          - descricao: "Parai Autocenter"
+            valor: 70.00
+          - descricao: "Distribuidora"
+            valor: 94.00
+          - descricao: "Gasolina"
+            valor: 98.85
+          - descricao: "Mercado"
+            valor: 21.39
+          - descricao: "maria fumaça"
+            valor: 130.30
+          - descricao: "daiso"
+            valor: 10.99
+          - descricao: "cerveja"
+            valor: 14.99
+          - descricao: "café"
+            valor: 26.99
+          - descricao: "cigarro"
+            valor: 7.75
+          - descricao: "gasolina"
+            valor: 66.90
+          - descricao: "vegas"
+            valor: 16.00
+          - descricao: "dona"
+            valor: 4.39
+          - descricao: "pastel"
+            valor: 46.50
+          - descricao: "vegas"
+            valor: 29.00
+          - descricao: "atacadão"
+            valor: 31.96
+          - descricao: "vegas"
+            valor: 15.00
+          - descricao: "gela"
+            valor: 29.99
+          - descricao: "gela"
+            valor: 16.97
+          - descricao: "IPVA 3"
+            valor: 165.97
+          - descricao: "gasolina"
+            valor: 66.90
+          - descricao: "cigarro"
+            valor: 7.75
+          - descricao: "cerveja"
+            valor: 11.69
+          - descricao: "eron"
+            valor: 20.50
+          - descricao: "Gasolina"
+            valor: 135.40
+          - descricao: "consulta"
+            valor: 159.00
+          - descricao: "laudo"
+            valor: 263.73
+      "Mercado pago":
+        transacoes:
+          - descricao: "Perfume 5 de 6"
+            valor: 24.31
+          - descricao: "Empréstimo 6 de 18"
+            valor: 598.01
+  - nome: "JUL-AGO"
+    receitas:
+      salario: 4090.00
+      guardado: 45.58
+    contas:
+      "Santander":
+        transacoes:
+          - descricao: "Gasolina"
+            valor: 66.90
+          - descricao: "Gasolina 2/5"
+            valor: 64.50
+          - descricao: "Bonanza"
+            valor: 14.90
+      "C6":
+        transacoes:
+          - descricao: "Meu TIM"
+            valor: 58.99
+          - descricao: "Avó TIM"
+            valor: 70.99
+      "Itau":
+        transacoes:
+          - descricao: "parcela 4 de 10 guarda roupa"
+            valor: 99.80
+      "Nubank":
+        transacoes:
+          - descricao: "MS365"
+            valor: 36.00
+          - descricao: "Grancursos"
+            valor: 46.04
+          - descricao: "nu+"
+            valor: 29.00
+          - descricao: "youtube"
+            valor: 53.90
+          - descricao: "Google"
+            valor: 96.99
+          - descricao: "Bluefit"
+            valor: 145.00
+          - descricao: "Udemy"
+            valor: 51.00
+          - descricao: "Pix Priscilla"
+            valor: 163.88
+      "Picpay":
+        transacoes:
+          - descricao: "prajed 2 de 3"
+            valor: 130.46
+          - descricao: "IPVA 4 e 5"
+            valor: 0.00
+          - descricao: "anhanguera"
+            valor: 492.26
+          - descricao: "Filtro"
+            valor: 10.00
+          - descricao: "Mercado"
+            valor: 14.88
+          - descricao: "Parai Autocenter"
+            valor: 70.00
+          - descricao: "Distribuidora"
+            valor: 94.00
+          - descricao: "Gasolina"
+            valor: 98.85
+          - descricao: "Mercado"
+            valor: 21.39
+          - descricao: "maria fumaça"
+            valor: 130.30
+          - descricao: "daiso"
+            valor: 10.99
+          - descricao: "cerveja"
+            valor: 14.99
+          - descricao: "café"
+            valor: 26.99
+          - descricao: "cigarro"
+            valor: 7.75
+          - descricao: "gasolina"
+            valor: 66.90
+          - descricao: "vegas"
+            valor: 16.00
+          - descricao: "dona"
+            valor: 4.39
+          - descricao: "pastel"
+            valor: 46.50
+          - descricao: "vegas"
+            valor: 29.00
+          - descricao: "atacadão"
+            valor: 31.96
+          - descricao: "vegas"
+            valor: 15.00
+          - descricao: "gela"
+            valor: 29.99
+          - descricao: "gela"
+            valor: 16.97
+          - descricao: "IPVA 3"
+            valor: 165.97
+          - descricao: "gasolina"
+            valor: 66.90
+          - descricao: "cigarro"
+            valor: 7.75
+          - descricao: "cerveja"
+            valor: 11.69
+          - descricao: "eron"
+            valor: 20.50
+          - descricao: "Gasolina"
+            valor: 135.40
+          - descricao: "consulta"
+            valor: 159.00
+          - descricao: "laudo"
+            valor: 263.73
+      "Mercado pago":
+        transacoes:
+          - descricao: "Perfume 5 de 6"
+            valor: 24.31
+          - descricao: "Empréstimo 6 de 18"
+            valor: 598.01
