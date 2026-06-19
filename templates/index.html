@@ -584,6 +584,213 @@
                 width: 100%;
             }
         }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            color: white;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-income {
+            background-color: var(--color-success);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-income:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-expense {
+            background-color: var(--color-danger);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-expense:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-icon {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2.5;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .modal-content {
+            background-color: #111827;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 480px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 0.75rem;
+        }
+
+        .modal-header h3 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #ffffff, #e5e7eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.75rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .modal-close-btn:hover {
+            color: var(--color-danger);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-group input, 
+        .form-group select {
+            background-color: rgba(31, 41, 55, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+        }
+
+        .select-or-input {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 1.25rem;
+        }
+
+        .btn-cancel {
+            background-color: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-secondary);
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border: none;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -599,17 +806,30 @@
                 </div>
             </div>
             
-            <!-- Period Selector -->
-            <form action="" method="get" class="period-selector-form">
-                <label for="periodo">Período de referência:</label>
-                <div class="select-wrapper">
-                    <select name="periodo" id="periodo" onchange="this.form.submit()">
-                        {% for period in period_names %}
-                            <option value="{{ period }}" {% if period == selected_period %}selected{% endif %}>{{ period }}</option>
-                        {% endfor %}
-                    </select>
+            <!-- Quick Actions & Period Selector -->
+            <div class="header-actions">
+                <div class="action-buttons">
+                    <button class="btn btn-income" onclick="openModal('Entrada')">
+                        <svg class="icon btn-icon"><path d="M12 5v14M5 12h14"/></svg>
+                        Nova Entrada
+                    </button>
+                    <button class="btn btn-expense" onclick="openModal('Despesa')">
+                        <svg class="icon btn-icon"><path d="M19 12H5M12 19V5"/></svg>
+                        Nova Despesa
+                    </button>
                 </div>
-            </form>
+                
+                <form action="" method="get" class="period-selector-form">
+                    <label for="periodo">Período de referência:</label>
+                    <div class="select-wrapper">
+                        <select name="periodo" id="periodo" onchange="this.form.submit()">
+                            {% for period in period_names %}
+                                <option value="{{ period }}" {% if period == selected_period %}selected{% endif %}>{{ period }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
         </header>
 
         <!-- KPI Cards Grid -->
@@ -618,11 +838,11 @@
             <!-- Income Card -->
             <div class="kpi-card">
                 <div class="kpi-title">
-                    <span>Renda Mensal</span>
+                    <span>Receitas Totais</span>
                     <svg class="icon" style="color: var(--color-success);"><path d="M12 5v14M5 12h14"/></svg>
                 </div>
-                <div class="kpi-value" style="color: #6ee7b7;">{{ stats.salario }}</div>
-                <div class="kpi-desc">Guardado adicional: <span style="font-weight: 500;">{{ stats.guardado }}</span></div>
+                <div class="kpi-value" style="color: #6ee7b7;">{{ stats.total_receitas }}</div>
+                <div class="kpi-desc">Salário: {{ stats.salario }} | Guardado: {{ stats.guardado }}</div>
             </div>
 
             <!-- Spent Card -->
@@ -748,8 +968,155 @@
 
     </div>
 
+    <!-- Transaction Modal -->
+    <div id="transaction-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Novo Lançamento</h3>
+                <button class="modal-close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form action="/add-transaction" method="POST" id="transaction-form">
+                <!-- Keep track of the active period -->
+                <input type="hidden" name="periodo" value="{{ selected_period }}">
+                
+                <div class="form-group">
+                    <label for="form-tipo">Tipo</label>
+                    <select name="tipo" id="form-tipo" onchange="toggleFormFields()" required>
+                        <option value="Entrada">Entrada (Renda)</option>
+                        <option value="Despesa">Despesa (Gasto)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="form-descricao">Descrição</label>
+                    <input type="text" name="descricao" id="form-descricao" placeholder="Ex: Salário, Gasolina, Supermercado..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="form-valor">Valor (R$)</label>
+                    <input type="number" step="0.01" name="valor" id="form-valor" placeholder="0,00" required>
+                </div>
+
+                <!-- Categoria/Cartão -->
+                <div class="form-group" id="group-categoria">
+                    <label for="form-categoria" id="label-categoria">Categoria / Cartão</label>
+                    <div class="select-or-input">
+                        <select id="select-categoria" onchange="handleCategorySelectChange()" style="margin-bottom: 0.5rem;">
+                            <!-- Will be dynamically populated via JS -->
+                        </select>
+                        <input type="text" name="categoria" id="form-categoria" placeholder="Nome da Categoria ou Cartão" required>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-submit">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Javascript for UI interactivity -->
     <script>
+        // Cards and Income Categories
+        const cardsList = [
+            {% for bank_name, info in contas.items() %}
+                "{{ bank_name }}",
+            {% endfor %}
+        ];
+        
+        const incomeCategories = [
+            {% for key in receitas_keys %}
+                "{{ key }}",
+            {% endfor %}
+        ];
+
+        function openModal(type) {
+            const modal = document.getElementById('transaction-modal');
+            const form = document.getElementById('transaction-form');
+            const formTipo = document.getElementById('form-tipo');
+            const modalTitle = document.getElementById('modal-title');
+            
+            // Reset form
+            form.reset();
+            
+            // Set type
+            formTipo.value = type;
+            modalTitle.textContent = type === 'Entrada' ? 'Nova Entrada' : 'Nova Despesa';
+            
+            toggleFormFields();
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('transaction-modal').style.display = 'none';
+        }
+
+        function toggleFormFields() {
+            const type = document.getElementById('form-tipo').value;
+            const selectCat = document.getElementById('select-categoria');
+            const labelCat = document.getElementById('label-categoria');
+            const inputCat = document.getElementById('form-categoria');
+            
+            // Clear current options
+            selectCat.innerHTML = '';
+            
+            const optionsList = type === 'Entrada' ? incomeCategories : cardsList;
+            const labelText = type === 'Entrada' ? 'Categoria de Entrada' : 'Cartão / Conta';
+            labelCat.textContent = labelText;
+            
+            optionsList.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt;
+                option.textContent = opt;
+                selectCat.appendChild(option);
+            });
+            
+            // Add custom option
+            const customOption = document.createElement('option');
+            customOption.value = 'custom';
+            customOption.textContent = type === 'Entrada' ? '+ Nova categoria...' : '+ Novo cartão/conta...';
+            selectCat.appendChild(customOption);
+            
+            // Set initial input value to the first select option
+            if (optionsList.length > 0) {
+                selectCat.value = optionsList[0];
+                inputCat.value = optionsList[0];
+                inputCat.style.display = 'none'; // hide custom input initially
+                inputCat.required = false;
+            } else {
+                selectCat.value = 'custom';
+                inputCat.value = '';
+                inputCat.style.display = 'block';
+                inputCat.required = true;
+            }
+        }
+
+        function handleCategorySelectChange() {
+            const selectCat = document.getElementById('select-categoria');
+            const inputCat = document.getElementById('form-categoria');
+            
+            if (selectCat.value === 'custom') {
+                inputCat.value = '';
+                inputCat.style.display = 'block';
+                inputCat.required = true;
+                inputCat.focus();
+            } else {
+                inputCat.value = selectCat.value;
+                inputCat.style.display = 'none';
+                inputCat.required = false;
+            }
+        }
+        
+        // Close modal when clicking outside of it
+        window.addEventListener('click', (event) => {
+            const modal = document.getElementById('transaction-modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
         // Track the active account index
         let activeIndex = 0;
         

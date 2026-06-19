@@ -1,7 +1,7 @@
 import os
 import datetime
 import yaml
-from flask import Flask, render_template, request, abort
+from flask import Flask, render_template, request, abort, redirect, url_for
 
 app = Flask(__name__)
 
@@ -58,8 +58,12 @@ def index():
         return abort(404, description="Período não encontrado.")
     
     # Calculate stats
-    salario = active_period['receitas'].get('salario', 0.0)
-    guardado = active_period['receitas'].get('guardado', 0.0)
+    receitas_dict = active_period.get('receitas', {})
+    salario = receitas_dict.get('salario', 0.0)
+    guardado = receitas_dict.get('guardado', 0.0)
+    
+    # Calculate dynamic total income
+    total_receitas = sum(val for val in receitas_dict.values() if isinstance(val, (int, float)))
     
     contas = active_period.get('contas', {})
     
@@ -88,7 +92,7 @@ def index():
             'count': len(transactions)
         }
         
-    restante = (salario + guardado) - overall_total
+    restante = total_receitas - overall_total
     dias_restantes = get_days_until_next_5th()
     media_diaria = restante / dias_restantes if restante > 0 else 0.0
     
@@ -96,6 +100,7 @@ def index():
     stats = {
         'salario': format_currency(salario),
         'guardado': format_currency(guardado),
+        'total_receitas': format_currency(total_receitas),
         'total_spent': format_currency(overall_total),
         'restante': format_currency(restante),
         'dias_restantes': dias_restantes,
@@ -108,13 +113,77 @@ def index():
         'is_negative': restante < 0
     }
     
+    receitas_keys = list(receitas_dict.keys())
+    
     return render_template(
         'index.html',
         period_names=period_names,
         selected_period=selected_name,
         stats=stats,
-        contas=contas_stats
+        contas=contas_stats,
+        receitas_keys=receitas_keys
     )
+
+@app.route('/add-transaction', methods=['POST'])
+def add_transaction():
+    tipo = request.form.get('tipo')
+    descricao = request.form.get('descricao')
+    valor_str = request.form.get('valor', '0.0')
+    categoria = request.form.get('categoria')
+    periodo = request.form.get('periodo')
+    
+    try:
+        valor = float(valor_str)
+    except ValueError:
+        valor = 0.0
+        
+    if not categoria or not periodo:
+        return abort(400, description="Categoria/Cartão e Período são campos obrigatórios.")
+        
+    data = load_data()
+    periodos = data.get('periodos', [])
+    
+    active_period = next((p for p in periodos if p['nome'] == periodo), None)
+    if not active_period:
+        return abort(404, description="Período não encontrado.")
+        
+    if tipo == 'Entrada':
+        receitas = active_period.setdefault('receitas', {})
+        # Find case-insensitive match or create new key
+        matched_key = None
+        for k in receitas.keys():
+            if k.lower() == categoria.lower():
+                matched_key = k
+                break
+        if not matched_key:
+            matched_key = categoria
+            
+        receitas[matched_key] = receitas.get(matched_key, 0.0) + valor
+        
+    elif tipo == 'Despesa':
+        contas = active_period.setdefault('contas', {})
+        # Find case-insensitive match or create new card
+        matched_card = None
+        for k in contas.keys():
+            if k.lower() == categoria.lower():
+                matched_card = k
+                break
+        if not matched_card:
+            matched_card = categoria
+            
+        card_data = contas.setdefault(matched_card, {})
+        transactions = card_data.setdefault('transacoes', [])
+        
+        transactions.append({
+            'descricao': descricao,
+            'valor': valor
+        })
+        
+    # Save to yaml
+    with open(YAML_PATH, 'w', encoding='utf-8') as f:
+        yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+        
+    return redirect(url_for('index', periodo=periodo))
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
