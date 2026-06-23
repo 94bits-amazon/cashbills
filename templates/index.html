@@ -696,6 +696,17 @@
             box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
         }
 
+        .btn-primary-mov {
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-primary-mov:hover {
+            background: linear-gradient(135deg, #059669, #2563eb);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+        }
+
         .btn-config-card {
             background-color: var(--color-info);
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
@@ -882,17 +893,17 @@
             <!-- Quick Actions & Period Selector -->
             <div class="header-actions">
                 <div class="action-buttons">
-                    <button class="btn btn-income" onclick="openModal('Entrada')">
-                        <svg class="icon btn-icon"><path d="M12 5v14M5 12h14"/></svg>
-                        Nova Entrada
-                    </button>
-                    <button class="btn btn-expense" onclick="openModal('Despesa')">
-                        <svg class="icon btn-icon"><path d="M19 12H5M12 19V5"/></svg>
-                        Nova Despesa
+                    <button class="btn btn-primary-mov" onclick="openMovModal()">
+                        <svg class="icon btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                        Nova Movimentação
                     </button>
                     <button class="btn btn-config-card" onclick="openConfigModal()">
                         <svg class="icon btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                         Ajustar Cartões
+                    </button>
+                    <button class="btn btn-income" onclick="openBankConfigModal()">
+                        <svg class="icon btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                        Ajustar Contas
                     </button>
                 </div>
                 
@@ -956,6 +967,53 @@
                 <div class="kpi-desc">Restam <span class="countdown">{{ stats.dias_restantes }} dias</span> até o dia 5 do próximo mês</div>
             </div>
             
+        </div>
+
+        <!-- Section Bank Accounts -->
+        <h2 class="section-title">
+            <svg class="icon" style="margin-right: 0.25rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Contas Bancárias
+        </h2>
+        
+        <!-- Bank Accounts Grid -->
+        <div class="cards-grid" style="margin-bottom: 2.5rem;">
+            {% for bank_name, info in contas_bancarias.items() %}
+                {% set card_class = "card-default" %}
+                {% set bank_clean = bank_name|lower|trim %}
+                {% if "santander" in bank_clean %}
+                    {% set card_class = "card-santander" %}
+                {% elif "c6" in bank_clean %}
+                    {% set card_class = "card-c6" %}
+                {% elif "itau" in bank_clean or "itaú" in bank_clean %}
+                    {% set card_class = "card-itau" %}
+                {% elif "nubank" in bank_clean %}
+                    {% set card_class = "card-nubank" %}
+                {% elif "picpay" in bank_clean %}
+                    {% set card_class = "card-picpay" %}
+                {% elif "mercado pago" in bank_clean or "mercado" in bank_clean %}
+                    {% set card_class = "card-mercadopago" %}
+                {% endif %}
+                
+                <div class="credit-card {{ card_class }}" id="bank-btn-{{ loop.index0 }}" onclick="selectBankAccount('{{ bank_name }}', '{{ card_class }}', {{ loop.index0 }})" style="min-height: 140px; background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.1);">
+                    <div class="card-header" style="margin-bottom: 0.5rem;">
+                        <div class="card-branding">
+                            <span class="card-name" style="font-size: 1.1rem; text-transform: uppercase;">{{ bank_name }}</span>
+                            <button class="card-config-btn" onclick="event.stopPropagation(); openBankConfigModal('{{ bank_name }}')" title="Configurar Conta" style="font-size: 0.9rem;">
+                                ⚙️
+                            </button>
+                        </div>
+                        <div class="card-chip" style="width: 28px; height: 18px; opacity: 0.5;"></div>
+                    </div>
+                    <div class="card-body" style="margin-top: 0.3rem;">
+                        <div class="card-label" style="font-size: 0.65rem;">Saldo Atual</div>
+                        <div class="card-total" style="font-size: 1.4rem; color: #6ee7b7;">{{ info.saldo_formatado }}</div>
+                    </div>
+                    <div class="card-footer" style="margin-top: 0.3rem;">
+                        <span class="card-holder" style="font-size: 0.75rem;">CONTA</span>
+                        <span class="card-tx-count" style="font-size: 0.7rem;">{{ info.count }} mov.</span>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
 
         <!-- Section Accounts -->
@@ -1032,7 +1090,7 @@
                 </div>
             </div>
 
-            <!-- Transactions list -->
+            <!-- Transactions list (Credit Cards) -->
             {% for bank_name, info in contas.items() %}
                 <div class="tx-list-container" id="tx-list-{{ bank_name }}" style="display: none;">
                     {% if info.transacoes %}
@@ -1061,52 +1119,103 @@
                     {% endif %}
                 </div>
             {% endfor %}
+
+            <!-- Transactions list (Bank Accounts) -->
+            {% for bank_name, info in contas_bancarias.items() %}
+                <div class="tx-list-container" id="tx-list-bank-{{ bank_name }}" style="display: none;">
+                    {% if info.transacoes %}
+                        <div class="tx-list">
+                            {% for tx in info.transacoes %}
+                                {% set tx_type_class = "spent" %}
+                                {% set prefix = "- " %}
+                                {% set icon = "💸" %}
+                                {% if tx.tipo == 'Entrada' %}
+                                    {% set tx_type_class = "zero" %}
+                                    {% set prefix = "+ " %}
+                                    {% set icon = "💰" %}
+                                {% endif %}
+                                <div class="tx-item {{ tx_type_class }}" data-desc="{{ tx.descricao|lower }}">
+                                    <div class="tx-info">
+                                        <div class="tx-icon">{{ icon }}</div>
+                                        <div class="tx-details">
+                                            <span class="tx-desc">{{ tx.descricao }}</span>
+                                            <span class="tx-date">{% if tx.tipo == 'Entrada' %}Entrada/Receita{% else %}Despesa no Débito{% endif %}</span>
+                                        </div>
+                                    </div>
+                                    <span class="tx-value" style="{% if tx.tipo == 'Entrada' %}color: #34d399;{% endif %}">{{ prefix }}{{ tx.valor_formatado }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="no-transactions">
+                            Nenhum lançamento registrado neste período para esta conta bancária.
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
         </div>
 
     </div>
 
-    <!-- Transaction Modal -->
-    <div id="transaction-modal" class="modal-overlay" style="display: none;">
+    <!-- Unified Movimentation Modal -->
+    <div id="movimentation-modal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modal-title">Novo Lançamento</h3>
-                <button class="modal-close-btn" onclick="closeModal()">&times;</button>
+                <h3 id="mov-modal-title">Nova Movimentação</h3>
+                <button class="modal-close-btn" onclick="closeMovModal()">&times;</button>
             </div>
-            <form action="/add-transaction" method="POST" id="transaction-form">
-                <!-- Keep track of the active period -->
+            <form action="/add-transaction" method="POST" id="movimentation-form">
                 <input type="hidden" name="periodo" value="{{ selected_period }}">
                 
                 <div class="form-group">
-                    <label for="form-tipo">Tipo</label>
-                    <select name="tipo" id="form-tipo" onchange="toggleFormFields()" required>
-                        <option value="Entrada">Entrada (Renda)</option>
-                        <option value="Despesa">Despesa (Gasto)</option>
+                    <label for="mov-tipo">Tipo de Movimentação</label>
+                    <select name="tipo" id="mov-tipo" onchange="toggleMovFormFields()" required>
+                        <option value="Entrada">Entrada / Receita</option>
+                        <option value="Debito">Despesa no Débito (Conta Bancária)</option>
+                        <option value="Credito" selected>Despesa no Crédito (Cartão de Crédito)</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="form-descricao">Descrição</label>
-                    <input type="text" name="descricao" id="form-descricao" placeholder="Ex: Salário, Gasolina, Supermercado..." required>
+                    <label for="mov-descricao">Descrição</label>
+                    <input type="text" name="descricao" id="mov-descricao" placeholder="Ex: Salário, Gasolina, Padaria..." required>
                 </div>
 
                 <div class="form-group">
-                    <label for="form-valor">Valor (R$)</label>
-                    <input type="number" step="0.01" name="valor" id="form-valor" placeholder="0,00" required>
+                    <label for="mov-valor">Valor (R$)</label>
+                    <input type="number" step="0.01" name="valor" id="mov-valor" placeholder="0,00" required>
                 </div>
 
-                <!-- Categoria/Cartão -->
-                <div class="form-group" id="group-categoria">
-                    <label for="form-categoria" id="label-categoria">Categoria / Cartão de Crédito</label>
+                <!-- Dia de Pagamento (for Entrada) -->
+                <div class="form-group" id="group-mov-dia-pagamento" style="display: none;">
+                    <label for="mov-dia-pagamento">Dia do Recebimento</label>
+                    <input type="number" min="1" max="31" name="dia_pagamento" id="mov-dia-pagamento" placeholder="Ex: 5">
+                </div>
+
+                <!-- Conta Bancária (for Entrada/Débito) -->
+                <div class="form-group" id="group-mov-conta" style="display: none;">
+                    <label for="select-mov-conta">Conta Bancária</label>
                     <div class="select-or-input">
-                        <select id="select-categoria" onchange="handleCategorySelectChange()" style="margin-bottom: 0.5rem;">
-                            <!-- Will be dynamically populated via JS -->
+                        <select id="select-mov-conta" onchange="handleMovContaSelectChange()" style="margin-bottom: 0.5rem;">
+                            <!-- Filled dynamically -->
                         </select>
-                        <input type="text" name="categoria" id="form-categoria" placeholder="Nome da Categoria ou Cartão de Crédito" required>
+                        <input type="text" name="conta_destino" id="mov-conta" placeholder="Nome da Conta Bancária">
+                    </div>
+                </div>
+
+                <!-- Cartão de Crédito (for Crédito) -->
+                <div class="form-group" id="group-mov-cartao">
+                    <label for="select-mov-cartao">Cartão de Crédito</label>
+                    <div class="select-or-input">
+                        <select id="select-mov-cartao" onchange="handleMovCartaoSelectChange()" style="margin-bottom: 0.5rem;">
+                            <!-- Filled dynamically -->
+                        </select>
+                        <input type="text" name="cartao_credito" id="mov-cartao" placeholder="Nome do Cartão de Crédito">
                     </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                    <button type="button" class="btn-cancel" onclick="closeMovModal()">Cancelar</button>
                     <button type="submit" class="btn-submit">Salvar</button>
                 </div>
             </form>
@@ -1158,9 +1267,44 @@
         </div>
     </div>
 
+    <!-- Bank Account Config Modal -->
+    <div id="bank-config-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="bank-config-modal-title">Configurar Conta Bancária</h3>
+                <button class="modal-close-btn" onclick="closeBankConfigModal()">&times;</button>
+            </div>
+            <form action="/configure-bank" method="POST" id="bank-config-form">
+                <input type="hidden" name="periodo" value="{{ selected_period }}">
+                
+                <div class="form-group">
+                    <label for="bank-config-select">Selecionar Conta Bancária</label>
+                    <select id="bank-config-select" onchange="handleBankConfigSelectChange()" required>
+                        <!-- Options filled via JS -->
+                    </select>
+                </div>
+                
+                <div class="form-group" id="bank-config-group-new" style="display: none;">
+                    <label for="bank-config-name">Nome da Nova Conta</label>
+                    <input type="text" name="bank_name" id="bank-config-name" placeholder="Ex: Itaú, Bradesco, Nubank...">
+                </div>
+
+                <div class="form-group">
+                    <label for="bank-config-saldo">Saldo Atual (R$)</label>
+                    <input type="number" step="0.01" name="saldo_atual" id="bank-config-saldo" placeholder="0,00" required>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeBankConfigModal()">Cancelar</button>
+                    <button type="submit" class="btn-submit">Salvar Conta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Javascript for UI interactivity -->
     <script>
-        // Cards and Income Categories
+        // Cards and Bank Lists
         const cardsList = [
             {% for bank_name, info in contas.items() %}
                 "{{ bank_name }}",
@@ -1176,6 +1320,20 @@
                 },
             {% endfor %}
         };
+
+        const banksList = [
+            {% for bank_name, info in contas_bancarias.items() %}
+                "{{ bank_name }}",
+            {% endfor %}
+        ];
+
+        const banksData = {
+            {% for bank_name, info in contas_bancarias.items() %}
+                "{{ bank_name }}": {
+                    "saldo_atual": {{ info.saldo_atual }}
+                },
+            {% endfor %}
+        };
         
         const incomeCategories = [
             {% for key in receitas_keys %}
@@ -1183,81 +1341,128 @@
             {% endfor %}
         ];
 
-        function openModal(type) {
-            const modal = document.getElementById('transaction-modal');
-            const form = document.getElementById('transaction-form');
-            const formTipo = document.getElementById('form-tipo');
-            const modalTitle = document.getElementById('modal-title');
-            
-            // Reset form
+        function openMovModal() {
+            const modal = document.getElementById('movimentation-modal');
+            const form = document.getElementById('movimentation-form');
             form.reset();
             
-            // Set type
-            formTipo.value = type;
-            modalTitle.textContent = type === 'Entrada' ? 'Nova Entrada' : 'Nova Despesa';
+            // Populate select for contas
+            const selectConta = document.getElementById('select-mov-conta');
+            selectConta.innerHTML = '';
+            banksList.forEach(bank => {
+                const opt = document.createElement('option');
+                opt.value = bank;
+                opt.textContent = bank;
+                selectConta.appendChild(opt);
+            });
+            const customBankOpt = document.createElement('option');
+            customBankOpt.value = 'custom';
+            customBankOpt.textContent = '+ Nova Conta Bancária...';
+            selectConta.appendChild(customBankOpt);
             
-            toggleFormFields();
+            // Populate select for cartoes
+            const selectCartao = document.getElementById('select-mov-cartao');
+            selectCartao.innerHTML = '';
+            cardsList.forEach(card => {
+                const opt = document.createElement('option');
+                opt.value = card;
+                opt.textContent = card;
+                selectCartao.appendChild(opt);
+            });
+            const customCardOpt = document.createElement('option');
+            customCardOpt.value = 'custom';
+            customCardOpt.textContent = '+ Novo Cartão de Crédito...';
+            selectCartao.appendChild(customCardOpt);
+            
+            // Initialize selection values
+            if (banksList.length > 0) {
+                selectConta.value = banksList[0];
+                document.getElementById('mov-conta').value = banksList[0];
+                document.getElementById('mov-conta').style.display = 'none';
+            } else {
+                selectConta.value = 'custom';
+                document.getElementById('mov-conta').value = '';
+                document.getElementById('mov-conta').style.display = 'block';
+            }
+            
+            if (cardsList.length > 0) {
+                selectCartao.value = cardsList[0];
+                document.getElementById('mov-cartao').value = cardsList[0];
+                document.getElementById('mov-cartao').style.display = 'none';
+            } else {
+                selectCartao.value = 'custom';
+                document.getElementById('mov-cartao').value = '';
+                document.getElementById('mov-cartao').style.display = 'block';
+            }
+            
+            // Default select type to Credit
+            document.getElementById('mov-tipo').value = 'Credito';
+            toggleMovFormFields();
             
             modal.style.display = 'flex';
         }
 
-        function closeModal() {
-            document.getElementById('transaction-modal').style.display = 'none';
+        function closeMovModal() {
+            document.getElementById('movimentation-modal').style.display = 'none';
         }
 
-        function toggleFormFields() {
-            const type = document.getElementById('form-tipo').value;
-            const selectCat = document.getElementById('select-categoria');
-            const labelCat = document.getElementById('label-categoria');
-            const inputCat = document.getElementById('form-categoria');
+        function toggleMovFormFields() {
+            const tipo = document.getElementById('mov-tipo').value;
+            const groupConta = document.getElementById('group-mov-conta');
+            const groupCartao = document.getElementById('group-mov-cartao');
+            const groupDiaPagamento = document.getElementById('group-mov-dia-pagamento');
             
-            // Clear current options
-            selectCat.innerHTML = '';
-            
-            const optionsList = type === 'Entrada' ? incomeCategories : cardsList;
-            const labelText = type === 'Entrada' ? 'Categoria de Entrada' : 'Cartão de Crédito';
-            labelCat.textContent = labelText;
-            
-            optionsList.forEach(opt => {
-                const option = document.createElement('option');
-                option.value = opt;
-                option.textContent = opt;
-                selectCat.appendChild(option);
-            });
-            
-            // Add custom option
-            const customOption = document.createElement('option');
-            customOption.value = 'custom';
-            customOption.textContent = type === 'Entrada' ? '+ Nova categoria...' : '+ Novo Cartão de Crédito...';
-            selectCat.appendChild(customOption);
-            
-            // Set initial input value to the first select option
-            if (optionsList.length > 0) {
-                selectCat.value = optionsList[0];
-                inputCat.value = optionsList[0];
-                inputCat.style.display = 'none'; // hide custom input initially
-                inputCat.required = false;
-            } else {
-                selectCat.value = 'custom';
-                inputCat.value = '';
-                inputCat.style.display = 'block';
-                inputCat.required = true;
+            if (tipo === 'Entrada') {
+                groupConta.style.display = 'block';
+                groupCartao.style.display = 'none';
+                groupDiaPagamento.style.display = 'block';
+                document.getElementById('mov-dia-pagamento').required = true;
+                document.getElementById('mov-conta').required = true;
+                document.getElementById('mov-cartao').required = false;
+            } else if (tipo === 'Debito') {
+                groupConta.style.display = 'block';
+                groupCartao.style.display = 'none';
+                groupDiaPagamento.style.display = 'none';
+                document.getElementById('mov-dia-pagamento').required = false;
+                document.getElementById('mov-conta').required = true;
+                document.getElementById('mov-cartao').required = false;
+            } else if (tipo === 'Credito') {
+                groupConta.style.display = 'none';
+                groupCartao.style.display = 'block';
+                groupDiaPagamento.style.display = 'none';
+                document.getElementById('mov-dia-pagamento').required = false;
+                document.getElementById('mov-conta').required = false;
+                document.getElementById('mov-cartao').required = true;
             }
         }
 
-        function handleCategorySelectChange() {
-            const selectCat = document.getElementById('select-categoria');
-            const inputCat = document.getElementById('form-categoria');
-            
-            if (selectCat.value === 'custom') {
-                inputCat.value = '';
-                inputCat.style.display = 'block';
-                inputCat.required = true;
-                inputCat.focus();
+        function handleMovContaSelectChange() {
+            const select = document.getElementById('select-mov-conta');
+            const input = document.getElementById('mov-conta');
+            if (select.value === 'custom') {
+                input.value = '';
+                input.style.display = 'block';
+                input.required = true;
+                input.focus();
             } else {
-                inputCat.value = selectCat.value;
-                inputCat.style.display = 'none';
-                inputCat.required = false;
+                input.value = select.value;
+                input.style.display = 'none';
+                input.required = false;
+            }
+        }
+
+        function handleMovCartaoSelectChange() {
+            const select = document.getElementById('select-mov-cartao');
+            const input = document.getElementById('mov-cartao');
+            if (select.value === 'custom') {
+                input.value = '';
+                input.style.display = 'block';
+                input.required = true;
+                input.focus();
+            } else {
+                input.value = select.value;
+                input.style.display = 'none';
+                input.required = false;
             }
         }
 
@@ -1329,12 +1534,82 @@
                 vencimentoInput.value = data.dia_vencimento;
             }
         }
+
+        function openBankConfigModal(preselectedBank = null) {
+            const modal = document.getElementById('bank-config-modal');
+            const selectBank = document.getElementById('bank-config-select');
+            
+            // Clear and build select options
+            selectBank.innerHTML = '';
+            
+            // Add options for existing banks
+            Object.keys(banksData).forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name;
+                selectBank.appendChild(opt);
+            });
+            
+            // Add "new bank" option
+            const newOpt = document.createElement('option');
+            newOpt.value = '__new__';
+            newOpt.textContent = '+ Cadastrar Nova Conta...';
+            selectBank.appendChild(newOpt);
+            
+            if (preselectedBank && banksData[preselectedBank]) {
+                selectBank.value = preselectedBank;
+            } else {
+                if (Object.keys(banksData).length > 0) {
+                    selectBank.value = Object.keys(banksData)[0];
+                } else {
+                    selectBank.value = '__new__';
+                }
+            }
+            
+            handleBankConfigSelectChange();
+            modal.style.display = 'flex';
+        }
+
+        function closeBankConfigModal() {
+            document.getElementById('bank-config-modal').style.display = 'none';
+        }
+
+        function handleBankConfigSelectChange() {
+            const selectBank = document.getElementById('bank-config-select');
+            const newBankGroup = document.getElementById('bank-config-group-new');
+            const bankNameInput = document.getElementById('bank-config-name');
+            const saldoInput = document.getElementById('bank-config-saldo');
+            
+            if (selectBank.value === '__new__') {
+                newBankGroup.style.display = 'block';
+                bankNameInput.value = '';
+                bankNameInput.required = true;
+                bankNameInput.focus();
+                
+                saldoInput.value = '';
+            } else {
+                newBankGroup.style.display = 'none';
+                bankNameInput.value = selectBank.value;
+                bankNameInput.required = false;
+                
+                const data = banksData[selectBank.value];
+                saldoInput.value = data.saldo_atual;
+            }
+        }
         
         // Close modal when clicking outside of it
         window.addEventListener('click', (event) => {
-            const modal = document.getElementById('transaction-modal');
+            const modal = document.getElementById('movimentation-modal');
+            const cardModal = document.getElementById('card-config-modal');
+            const bankModal = document.getElementById('bank-config-modal');
             if (event.target === modal) {
-                closeModal();
+                closeMovModal();
+            }
+            if (event.target === cardModal) {
+                closeConfigModal();
+            }
+            if (event.target === bankModal) {
+                closeBankConfigModal();
             }
         });
 
@@ -1384,6 +1659,38 @@
             filterTransactions(); // Reset filter
             
             activeIndex = idx;
+        }
+
+        function selectBankAccount(name, cardClass, idx) {
+            // Remove active class from all cards
+            const cards = document.querySelectorAll('.credit-card');
+            cards.forEach(card => card.classList.remove('active'));
+            
+            // Add active class to selected bank card
+            const selectedCard = document.getElementById('bank-btn-' + idx);
+            if (selectedCard) {
+                selectedCard.classList.add('active');
+            }
+            
+            // Hide all transaction lists
+            const lists = document.querySelectorAll('.tx-list-container');
+            lists.forEach(list => list.style.display = 'none');
+            
+            // Show selected bank transaction list
+            const activeList = document.getElementById('tx-list-bank-' + name);
+            if (activeList) {
+                activeList.style.display = 'block';
+            }
+            
+            // Update details header
+            document.getElementById('active-account-name').textContent = name + ' - Movimentações (Conta)';
+            const badge = document.getElementById('active-badge');
+            badge.style.backgroundColor = colors[cardClass] || '#ffffff';
+            
+            // Clear search box
+            const searchInput = document.getElementById('tx-search');
+            searchInput.value = '';
+            filterTransactions(); // Reset filter
         }
 
         function filterTransactions() {
