@@ -39,24 +39,88 @@ def load_data():
             app.logger.error(f"Error reading YAML: {e}")
             return {"periodos": []}
 
+def generate_periods():
+    # Start at 2026-01
+    start_year = 2026
+    start_month = 1
+    
+    # Get current year and month
+    today = datetime.date.today()
+    curr_year = today.year
+    curr_month = today.month
+    
+    # Next month (future period)
+    if curr_month == 12:
+        next_year = curr_year + 1
+        next_month = 1
+    else:
+        next_year = curr_year
+        next_month = curr_month + 1
+        
+    periods = []
+    
+    month_names = {
+        1: "Janeiro de",
+        2: "Fevereiro de",
+        3: "Março de",
+        4: "Abril de",
+        5: "Maio de",
+        6: "Junho de",
+        7: "Julho de",
+        8: "Agosto de",
+        9: "Setembro de",
+        10: "Outubro de",
+        11: "Novembro de",
+        12: "Dezembro de"
+    }
+    
+    y = start_year
+    m = start_month
+    while (y < next_year) or (y == next_year and m <= next_month):
+        key = f"{y}-{m:02d}"
+        label = f"{month_names[m]} {y}"
+        periods.append((key, label))
+        
+        if m == 12:
+            m = 1
+            y += 1
+        else:
+            m += 1
+            
+    return periods
+
 @app.route('/')
 def index():
     data = load_data()
-    periodos = data.get('periodos', [])
-    if not periodos:
-        return "Nenhum dado financeiro encontrado no arquivo modelo.yaml. Certifique-se de preenchê-lo.", 404
+    if 'periodos' not in data or not isinstance(data['periodos'], list):
+        data['periodos'] = []
+    periodos = data['periodos']
     
-    # Get period names
-    period_names = [p['nome'] for p in periodos]
+    # Generate periods list dynamically
+    period_options = generate_periods()
     
-    # Selected period (defaults to the first one)
-    selected_name = request.args.get('periodo', period_names[0])
+    # Default selected period is the current month
+    today = datetime.date.today()
+    default_period = f"{today.year}-{today.month:02d}"
+    
+    selected_name = request.args.get('periodo', default_period)
     
     # Find active period data
     active_period = next((p for p in periodos if p['nome'] == selected_name), None)
-    if not active_period:
-        return abort(404, description="Período não encontrado.")
     
+    # If not found, initialize it automatically with empty structures and save it
+    if not active_period:
+        active_period = {
+            'nome': selected_name,
+            'receitas': {},
+            'contas_bancarias': {},
+            'contas': {}
+        }
+        periodos.append(active_period)
+        # Save to YAML
+        with open(YAML_PATH, 'w', encoding='utf-8') as f:
+            yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+            
     # Calculate stats
     receitas_dict = active_period.get('receitas', {})
     
@@ -186,7 +250,7 @@ def index():
     
     return render_template(
         'index.html',
-        period_names=period_names,
+        period_options=period_options,
         selected_period=selected_name,
         stats=stats,
         contas=contas_stats,

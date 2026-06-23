@@ -911,8 +911,8 @@
                     <label for="periodo">Período de referência:</label>
                     <div class="select-wrapper">
                         <select name="periodo" id="periodo" onchange="this.form.submit()">
-                            {% for period in period_names %}
-                                <option value="{{ period }}" {% if period == selected_period %}selected{% endif %}>{{ period }}</option>
+                            {% for key, label in period_options %}
+                                <option value="{{ key }}" {% if key == selected_period %}selected{% endif %}>{{ label }}</option>
                             {% endfor %}
                         </select>
                     </div>
