@@ -85,11 +85,22 @@ def index():
                 'valor_formatado': format_currency(t.get('valor', 0.0))
             })
         
+        limite_total = float(info.get('limite_total', 0.0))
+        dia_fechamento = int(info.get('dia_fechamento', 10))
+        dia_vencimento = int(info.get('dia_vencimento', 20))
+        limite_disponivel = limite_total - total_bank
+
         contas_stats[bank_name] = {
             'transacoes': formatted_txs,
             'total_formatado': format_currency(total_bank),
             'total': total_bank,
-            'count': len(transactions)
+            'count': len(transactions),
+            'limite_total': limite_total,
+            'limite_total_formatado': format_currency(limite_total),
+            'limite_disponivel': limite_disponivel,
+            'limite_disponivel_formatado': format_currency(limite_disponivel),
+            'dia_fechamento': dia_fechamento,
+            'dia_vencimento': dia_vencimento
         }
         
     restante = total_receitas - overall_total
@@ -172,6 +183,9 @@ def add_transaction():
             matched_card = categoria
             
         card_data = contas.setdefault(matched_card, {})
+        card_data.setdefault('limite_total', 0.0)
+        card_data.setdefault('dia_fechamento', 10)
+        card_data.setdefault('dia_vencimento', 20)
         transactions = card_data.setdefault('transacoes', [])
         
         transactions.append({
@@ -179,6 +193,63 @@ def add_transaction():
             'valor': valor
         })
         
+    # Save to yaml
+    with open(YAML_PATH, 'w', encoding='utf-8') as f:
+        yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+        
+    return redirect(url_for('index', periodo=periodo))
+
+@app.route('/configure-card', methods=['POST'])
+def configure_card():
+    card_name = request.form.get('card_name')
+    limite_total_str = request.form.get('limite_total', '0.0')
+    dia_fechamento_str = request.form.get('dia_fechamento', '10')
+    dia_vencimento_str = request.form.get('dia_vencimento', '20')
+    periodo = request.form.get('periodo')
+    
+    try:
+        limite_total = float(limite_total_str)
+    except ValueError:
+        limite_total = 0.0
+        
+    try:
+        dia_fechamento = int(dia_fechamento_str)
+    except ValueError:
+        dia_fechamento = 10
+        
+    try:
+        dia_vencimento = int(dia_vencimento_str)
+    except ValueError:
+        dia_vencimento = 20
+        
+    if not card_name or not periodo:
+        return abort(400, description="Nome do cartão e período são obrigatórios.")
+        
+    data = load_data()
+    periodos = data.get('periodos', [])
+    
+    active_period = next((p for p in periodos if p['nome'] == periodo), None)
+    if not active_period:
+        return abort(404, description="Período não encontrado.")
+        
+    contas = active_period.setdefault('contas', {})
+    
+    # Case-insensitive check to update or create
+    matched_card = None
+    for k in contas.keys():
+        if k.lower() == card_name.lower():
+            matched_card = k
+            break
+            
+    if not matched_card:
+        matched_card = card_name
+        
+    card_data = contas.setdefault(matched_card, {})
+    card_data['limite_total'] = limite_total
+    card_data['dia_fechamento'] = dia_fechamento
+    card_data['dia_vencimento'] = dia_vencimento
+    card_data.setdefault('transacoes', [])
+    
     # Save to yaml
     with open(YAML_PATH, 'w', encoding='utf-8') as f:
         yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
