@@ -494,5 +494,148 @@ def configure_bank():
         
     return redirect(url_for('index', periodo=periodo))
 
+@app.route('/delete-transaction', methods=['POST'])
+def delete_transaction():
+    tipo = request.form.get('tipo')
+    entidade = request.form.get('entidade')
+    idx_str = request.form.get('index')
+    periodo = request.form.get('periodo')
+    
+    try:
+        idx = int(idx_str)
+    except (ValueError, TypeError):
+        return abort(400, description="Índice inválido.")
+        
+    if not periodo or not entidade:
+        return abort(400, description="Parâmetros ausentes.")
+        
+    data = load_data()
+    periodos = data.get('periodos', [])
+    
+    active_period = next((p for p in periodos if p['nome'] == periodo), None)
+    if not active_period:
+        return abort(404, description="Período não encontrado.")
+        
+    if tipo == 'Bank':
+        contas_bancarias = active_period.get('contas_bancarias', {})
+        if entidade in contas_bancarias:
+            bank_data = contas_bancarias[entidade]
+            transactions = bank_data.get('transacoes', [])
+            if 0 <= idx < len(transactions):
+                tx = transactions.pop(idx)
+                tx_valor = float(tx.get('valor', 0.0))
+                tx_tipo = tx.get('tipo', 'Debito')
+                
+                if tx_tipo == 'Debito':
+                    # Add back to bank account
+                    bank_data['saldo_atual'] = bank_data.get('saldo_atual', 0.0) + tx_valor
+                elif tx_tipo == 'Entrada':
+                    # Subtract from bank account
+                    bank_data['saldo_atual'] = bank_data.get('saldo_atual', 0.0) - tx_valor
+                    
+                    # Remove or subtract from receitas
+                    receitas = active_period.get('receitas', {})
+                    tx_desc = tx.get('descricao', 'Outra Receita')
+                    
+                    matched_rec = None
+                    for k in receitas.keys():
+                        if k.lower() == tx_desc.lower():
+                            matched_rec = k
+                            break
+                    if not matched_rec and tx_desc in receitas:
+                        matched_rec = tx_desc
+                        
+                    if matched_rec:
+                        rec_data = receitas[matched_rec]
+                        if isinstance(rec_data, dict):
+                            new_val = rec_data.get('valor', 0.0) - tx_valor
+                            if new_val <= 0:
+                                receitas.pop(matched_rec)
+                            else:
+                                rec_data['valor'] = new_val
+                        else:
+                            # old float format
+                            new_val = float(rec_data) - tx_valor
+                            if new_val <= 0:
+                                receitas.pop(matched_rec)
+                            else:
+                                receitas[matched_rec] = new_val
+                                
+    elif tipo == 'Credito':
+        contas = active_period.get('contas', {})
+        if entidade in contas:
+            card_data = contas[entidade]
+            transactions = card_data.get('transacoes', [])
+            if 0 <= idx < len(transactions):
+                transactions.pop(idx)
+                
+    with open(YAML_PATH, 'w', encoding='utf-8') as f:
+        yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+        
+    return redirect(url_for('index', periodo=periodo))
+
+@app.route('/delete-card', methods=['POST'])
+def delete_card():
+    card_name = request.form.get('card_name')
+    periodo = request.form.get('periodo')
+    
+    if not card_name or not periodo:
+        return abort(400, description="Parâmetros ausentes.")
+        
+    data = load_data()
+    periodos = data.get('periodos', [])
+    
+    active_period = next((p for p in periodos if p['nome'] == periodo), None)
+    if not active_period:
+        return abort(404, description="Período não encontrado.")
+        
+    contas = active_period.get('contas', {})
+    
+    matched_key = None
+    for k in contas.keys():
+        if k.lower() == card_name.lower():
+            matched_key = k
+            break
+            
+    if matched_key:
+        contas.pop(matched_key)
+        
+    with open(YAML_PATH, 'w', encoding='utf-8') as f:
+        yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+        
+    return redirect(url_for('index', periodo=periodo))
+
+@app.route('/delete-bank', methods=['POST'])
+def delete_bank():
+    bank_name = request.form.get('bank_name')
+    periodo = request.form.get('periodo')
+    
+    if not bank_name or not periodo:
+        return abort(400, description="Parâmetros ausentes.")
+        
+    data = load_data()
+    periodos = data.get('periodos', [])
+    
+    active_period = next((p for p in periodos if p['nome'] == periodo), None)
+    if not active_period:
+        return abort(404, description="Período não encontrado.")
+        
+    contas_bancarias = active_period.get('contas_bancarias', {})
+    
+    matched_key = None
+    for k in contas_bancarias.keys():
+        if k.lower() == bank_name.lower():
+            matched_key = k
+            break
+            
+    if matched_key:
+        contas_bancarias.pop(matched_key)
+        
+    with open(YAML_PATH, 'w', encoding='utf-8') as f:
+        yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+        
+    return redirect(url_for('index', periodo=periodo))
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+

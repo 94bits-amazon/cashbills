@@ -1108,7 +1108,18 @@
                                             <span class="tx-date">Lançamento</span>
                                         </div>
                                     </div>
-                                    <span class="tx-value">{% if tx.valor > 0.0 %}- {% endif %}{{ tx.valor_formatado }}</span>
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        <span class="tx-value">{% if tx.valor > 0.0 %}- {% endif %}{{ tx.valor_formatado }}</span>
+                                        <form action="/delete-transaction" method="POST" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este lançamento do cartão?');">
+                                            <input type="hidden" name="tipo" value="Credito">
+                                            <input type="hidden" name="entidade" value="{{ bank_name }}">
+                                            <input type="hidden" name="index" value="{{ loop.index0 }}">
+                                            <input type="hidden" name="periodo" value="{{ selected_period }}">
+                                            <button type="submit" class="delete-btn" title="Excluir Lançamento">
+                                                🗑️
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             {% endfor %}
                         </div>
@@ -1133,7 +1144,7 @@
                                     {% set tx_type_class = "zero" %}
                                     {% set prefix = "+ " %}
                                     {% set icon = "💰" %}
-                                {% endif %}
+                                    {% endif %}
                                 <div class="tx-item {{ tx_type_class }}" data-desc="{{ tx.descricao|lower }}">
                                     <div class="tx-info">
                                         <div class="tx-icon">{{ icon }}</div>
@@ -1142,7 +1153,18 @@
                                             <span class="tx-date">{% if tx.tipo == 'Entrada' %}Entrada/Receita{% else %}Despesa no Débito{% endif %}</span>
                                         </div>
                                     </div>
-                                    <span class="tx-value" style="{% if tx.tipo == 'Entrada' %}color: #34d399;{% endif %}">{{ prefix }}{{ tx.valor_formatado }}</span>
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        <span class="tx-value" style="{% if tx.tipo == 'Entrada' %}color: #34d399;{% endif %}">{{ prefix }}{{ tx.valor_formatado }}</span>
+                                        <form action="/delete-transaction" method="POST" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta movimentação da conta?');">
+                                            <input type="hidden" name="tipo" value="Bank">
+                                            <input type="hidden" name="entidade" value="{{ bank_name }}">
+                                            <input type="hidden" name="index" value="{{ loop.index0 }}">
+                                            <input type="hidden" name="periodo" value="{{ selected_period }}">
+                                            <button type="submit" class="delete-btn" title="Excluir Lançamento">
+                                                🗑️
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             {% endfor %}
                         </div>
@@ -1260,9 +1282,15 @@
                 </div>
 
                 <div class="modal-footer">
+                    <button type="submit" form="card-delete-form" id="card-delete-btn" class="btn btn-danger-modal" style="margin-right: auto; display: none;">Excluir Cartão</button>
                     <button type="button" class="btn-cancel" onclick="closeConfigModal()">Cancelar</button>
                     <button type="submit" class="btn-submit">Salvar Configuração</button>
                 </div>
+            </form>
+            
+            <form action="/delete-card" method="POST" id="card-delete-form" style="display: none;" onsubmit="return confirm('Tem certeza que deseja excluir este cartão e todos os seus lançamentos deste período?');">
+                <input type="hidden" name="periodo" value="{{ selected_period }}">
+                <input type="hidden" name="card_name" id="delete-card-name-input">
             </form>
         </div>
     </div>
@@ -1295,9 +1323,15 @@
                 </div>
 
                 <div class="modal-footer">
+                    <button type="submit" form="bank-delete-form" id="bank-delete-btn" class="btn btn-danger-modal" style="margin-right: auto; display: none;">Excluir Conta</button>
                     <button type="button" class="btn-cancel" onclick="closeBankConfigModal()">Cancelar</button>
                     <button type="submit" class="btn-submit">Salvar Conta</button>
                 </div>
+            </form>
+            
+            <form action="/delete-bank" method="POST" id="bank-delete-form" style="display: none;" onsubmit="return confirm('Tem certeza que deseja excluir esta conta bancária e todas as suas movimentações deste período?');">
+                <input type="hidden" name="periodo" value="{{ selected_period }}">
+                <input type="hidden" name="bank_name" id="delete-bank-name-input">
             </form>
         </div>
     </div>
@@ -1513,6 +1547,8 @@
             const limiteInput = document.getElementById('config-limite-total');
             const fechamentoInput = document.getElementById('config-dia-fechamento');
             const vencimentoInput = document.getElementById('config-dia-vencimento');
+            const deleteBtn = document.getElementById('card-delete-btn');
+            const deleteNameInput = document.getElementById('delete-card-name-input');
             
             if (selectCard.value === '__new__') {
                 newCardGroup.style.display = 'block';
@@ -1523,6 +1559,9 @@
                 limiteInput.value = '';
                 fechamentoInput.value = '';
                 vencimentoInput.value = '';
+                
+                if (deleteBtn) deleteBtn.style.display = 'none';
+                if (deleteNameInput) deleteNameInput.value = '';
             } else {
                 newCardGroup.style.display = 'none';
                 cardNameInput.value = selectCard.value;
@@ -1532,6 +1571,9 @@
                 limiteInput.value = data.limite_total;
                 fechamentoInput.value = data.dia_fechamento;
                 vencimentoInput.value = data.dia_vencimento;
+                
+                if (deleteBtn) deleteBtn.style.display = 'inline-flex';
+                if (deleteNameInput) deleteNameInput.value = selectCard.value;
             }
         }
 
@@ -1579,6 +1621,8 @@
             const newBankGroup = document.getElementById('bank-config-group-new');
             const bankNameInput = document.getElementById('bank-config-name');
             const saldoInput = document.getElementById('bank-config-saldo');
+            const deleteBtn = document.getElementById('bank-delete-btn');
+            const deleteNameInput = document.getElementById('delete-bank-name-input');
             
             if (selectBank.value === '__new__') {
                 newBankGroup.style.display = 'block';
@@ -1587,6 +1631,9 @@
                 bankNameInput.focus();
                 
                 saldoInput.value = '';
+                
+                if (deleteBtn) deleteBtn.style.display = 'none';
+                if (deleteNameInput) deleteNameInput.value = '';
             } else {
                 newBankGroup.style.display = 'none';
                 bankNameInput.value = selectBank.value;
@@ -1594,6 +1641,9 @@
                 
                 const data = banksData[selectBank.value];
                 saldoInput.value = data.saldo_atual;
+                
+                if (deleteBtn) deleteBtn.style.display = 'inline-flex';
+                if (deleteNameInput) deleteNameInput.value = selectBank.value;
             }
         }
         
