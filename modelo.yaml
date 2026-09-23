@@ -13,3 +13,23 @@ periodos:
       saldo_atual: 3500.0
       transacoes: []
   contas: {}
+- nome: 2026-09
+  receitas: {}
+  contas_bancarias: {}
+  contas: {}
+- nome: 2026-08
+  receitas: {}
+  contas_bancarias: {}
+  contas: {}
+- nome: 2026-07
+  receitas: {}
+  contas_bancarias: {}
+  contas: {}
+- nome: 2026-05
+  receitas: {}
+  contas_bancarias: {}
+  contas: {}
+- nome: 2026-10
+  receitas: {}
+  contas_bancarias: {}
+  contas: {}
